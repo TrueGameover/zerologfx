@@ -12,27 +12,28 @@ import (
 )
 
 type ZeroLogRabbitMqAdapter struct {
-	logsChannel chan *string
+	logsChannel chan string
 	config      public.RabbitMqLogConfig
 }
 
 func NewZeroLogRabbitMqAdapter(mod *types.ZeroLogFxModule) (*ZeroLogRabbitMqAdapter, error) {
-	s := 100
+	s := 1000
 	if mod.Config.LogToRabbitMq != nil && mod.Config.LogToRabbitMq.LogsChannelSize != nil {
 		s = *mod.Config.LogToRabbitMq.LogsChannelSize
 	}
 
 	return &ZeroLogRabbitMqAdapter{
-		logsChannel: make(chan *string, s),
+		logsChannel: make(chan string, s),
 		config:      *mod.Config.LogToRabbitMq,
 	}, nil
 }
 
 func (z *ZeroLogRabbitMqAdapter) Write(p []byte) (n int, err error) {
+	// zerolog buffer with message can be changed
 	msg := strings.Clone(string(p))
 
 	select {
-	case z.logsChannel <- &msg:
+	case z.logsChannel <- msg:
 	default:
 		return 0, nil
 	}
@@ -73,7 +74,7 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 		contentType = *z.config.ContentType
 	}
 
-	publishTimeout := time.Second * 2
+	publishTimeout := time.Millisecond * 250
 	if z.config.Timeout != nil {
 		publishTimeout = *z.config.Timeout
 	}
@@ -87,7 +88,7 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 				return errors.New("channel was closed")
 			}
 
-			if len(*msg) > 0 {
+			if len(msg) > 0 {
 				timeoutCtx, cancelFunc := context.WithTimeout(ctx, publishTimeout)
 
 				err = channel.PublishWithContext(
@@ -98,7 +99,7 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 					false,
 					amqp091.Publishing{
 						ContentType: contentType,
-						Body:        []byte(*msg),
+						Body:        []byte(msg),
 					},
 				)
 				cancelFunc()

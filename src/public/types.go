@@ -16,9 +16,9 @@ type RabbitMqLogConfig struct {
 	Exchange *string
 	// ContentType default json
 	ContentType *string
-	// Timeout default 5 seconds
+	// Timeout default 250 ms
 	Timeout *time.Duration
-	// LogsChannelSize default 100
+	// LogsChannelSize default 1000
 	LogsChannelSize *int
 }
 
