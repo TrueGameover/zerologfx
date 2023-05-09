@@ -34,7 +34,7 @@ func (z *ZeroLogRabbitMqAdapter) Write(p []byte) (n int, err error) {
 	select {
 	case z.logsChannel <- &msg:
 	default:
-		return 0, errors.New("logs channel overflow")
+		return 0, nil
 	}
 
 	return len(p), nil
