@@ -111,5 +111,10 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 				}
 			}
 		}
+
+		select {
+		case <-ctx.Done():
+			return nil
+		}
 	}
 }
