@@ -46,6 +46,7 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 	amqpConn, err := amqp091.DialConfig(dsn, amqp091.Config{
 		Heartbeat: time.Second * 2,
 		Locale:    "en_US",
+		Dial:      amqp091.DefaultDial(time.Second * 2),
 	})
 	if err != nil {
 		return err
