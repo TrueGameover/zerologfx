@@ -15,15 +15,12 @@ import (
 )
 
 //goland:noinspection GoUnusedExportedFunction
-func NewZerologFxModule(appCtx context.Context, config public.ModuleConfig) fx.Option {
+func NewZerologFxModule(appCtx context.Context, config public.ModuleConfig) []fx.Option {
 	if config.LogToRabbitMq != nil && config.LogToRabbitMq.Queue == nil && config.LogToRabbitMq.Exchange == nil {
 		panic("queue or exchange expected")
 	}
 
-	return fx.Module("zerologfx",
-		fx.WithLogger(func(adapter log.FxEventLoggerAdapter) fxevent.Logger {
-			return adapter
-		}),
+	zerologfxModule := fx.Module("zerologfx",
 		fx.Provide(
 			log.NewFxEventLoggerAdapter,
 			newZeroLogLogger,
@@ -39,6 +36,13 @@ func NewZerologFxModule(appCtx context.Context, config public.ModuleConfig) fx.O
 			},
 		),
 	)
+
+	return []fx.Option{
+		zerologfxModule,
+		fx.WithLogger(func(adapter log.FxEventLoggerAdapter) fxevent.Logger {
+			return adapter
+		}),
+	}
 }
 
 func newZeroLogLogger(
