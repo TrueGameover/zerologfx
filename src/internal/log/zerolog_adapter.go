@@ -43,7 +43,10 @@ func (z *ZeroLogRabbitMqAdapter) Write(p []byte) (n int, err error) {
 
 func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 	dsn := fmt.Sprintf("amqp://%s:%s@%s:%s/", z.config.User, z.config.Password, z.config.Host, z.config.Port)
-	amqpConn, err := amqp091.Dial(dsn)
+	amqpConn, err := amqp091.DialConfig(dsn, amqp091.Config{
+		Heartbeat: time.Second * 2,
+		Locale:    "en_US",
+	})
 	if err != nil {
 		return err
 	}
