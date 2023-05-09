@@ -17,17 +17,9 @@ type ZeroLogRabbitMqAdapter struct {
 }
 
 func NewZeroLogRabbitMqAdapter(mod *types.ZeroLogFxModule) (*ZeroLogRabbitMqAdapter, error) {
-	if mod.Config.LogToRabbitMq == nil {
-		return nil, errors.New("rabbitmq configuration expected")
-	}
-
 	s := 100
-	if mod.Config.LogToRabbitMq.LogsChannelSize != nil {
+	if mod.Config.LogToRabbitMq != nil && mod.Config.LogToRabbitMq.LogsChannelSize != nil {
 		s = *mod.Config.LogToRabbitMq.LogsChannelSize
-	}
-
-	if mod.Config.LogToRabbitMq.Queue == nil && mod.Config.LogToRabbitMq.Exchange == nil {
-		return nil, errors.New("queue or exchange expected")
 	}
 
 	return &ZeroLogRabbitMqAdapter{
