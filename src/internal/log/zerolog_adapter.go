@@ -73,7 +73,7 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 		contentType = *z.config.ContentType
 	}
 
-	publishTimeout := time.Second * 5
+	publishTimeout := time.Second * 2
 	if z.config.Timeout != nil {
 		publishTimeout = *z.config.Timeout
 	}
