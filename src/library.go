@@ -69,7 +69,7 @@ func newZeroLogLogger(
 	}
 
 	if mod.Config.LogToRabbitMq != nil {
-		writers = append(writers)
+		writers = append(writers, rabbitmqZeroLogAdapter)
 	}
 
 	if mod.Config.LogOutputCustomWriters != nil {
