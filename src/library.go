@@ -93,7 +93,7 @@ func newZeroLogLogger(
 					for {
 						err := rabbitmqZeroLogAdapter.Handle(mod.AppCtx)
 						if err != nil {
-							appLogger.Error().Err(err).Msg("")
+							appLogger.Error().Err(err).Msg("zerologfx rabbitmq publish")
 						}
 
 						select {
