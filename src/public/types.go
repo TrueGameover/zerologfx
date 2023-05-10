@@ -14,6 +14,7 @@ type RabbitMqLogConfig struct {
 	Port     string
 	Queue    *string
 	Exchange *string
+	Vhost    *string
 	// ContentType default json
 	ContentType *string
 	// Timeout default 250 ms
