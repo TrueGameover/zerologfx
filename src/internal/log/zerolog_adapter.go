@@ -42,13 +42,12 @@ func (z *ZeroLogRabbitMqAdapter) Write(p []byte) (n int, err error) {
 }
 
 func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
-	dsn := fmt.Sprintf("amqp://%s:%s@%s:%s", z.config.User, z.config.Password, z.config.Host, z.config.Port)
+	dsn := fmt.Sprintf("amqp://%s:%s@%s:%s/%s", z.config.User, z.config.Password, z.config.Host, z.config.Port, z.config.Vhost)
 
 	amqpConn, err := amqp091.DialConfig(dsn, amqp091.Config{
 		Heartbeat: time.Second * 2,
 		Locale:    "en_US",
 		Dial:      amqp091.DefaultDial(time.Second * 2),
-		Vhost:     z.config.Vhost,
 	})
 	if err != nil {
 		return err
