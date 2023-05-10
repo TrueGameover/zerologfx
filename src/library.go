@@ -101,6 +101,8 @@ func newZeroLogLogger(
 							return
 						default:
 						}
+
+						time.Sleep(time.Second)
 					}
 				}()
 			}
