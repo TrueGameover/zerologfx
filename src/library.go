@@ -83,7 +83,7 @@ func newZeroLogLogger(
 	wGroup := sync.WaitGroup{}
 
 	lf.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
+		OnStart: func(_ context.Context) error {
 			appLogger.Info().Msg("=================== START ===================")
 
 			if mod.Config.LogToRabbitMq != nil {
@@ -109,7 +109,7 @@ func newZeroLogLogger(
 
 			return nil
 		},
-		OnStop: func(ctx context.Context) error {
+		OnStop: func(_ context.Context) error {
 			wGroup.Wait()
 			return nil
 		},

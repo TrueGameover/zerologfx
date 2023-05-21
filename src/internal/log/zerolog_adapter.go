@@ -13,7 +13,7 @@ import (
 
 type ZeroLogRabbitMqAdapter struct {
 	logsChannel chan string
-	config      public.RabbitMqLogConfig
+	config      *public.RabbitMqLogConfig
 }
 
 func NewZeroLogRabbitMqAdapter(mod *types.ZeroLogFxModule) (*ZeroLogRabbitMqAdapter, error) {
@@ -24,7 +24,7 @@ func NewZeroLogRabbitMqAdapter(mod *types.ZeroLogFxModule) (*ZeroLogRabbitMqAdap
 
 	return &ZeroLogRabbitMqAdapter{
 		logsChannel: make(chan string, s),
-		config:      *mod.Config.LogToRabbitMq,
+		config:      mod.Config.LogToRabbitMq,
 	}, nil
 }
 
@@ -45,9 +45,9 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 	dsn := fmt.Sprintf("amqp://%s:%s@%s:%s/%s", z.config.User, z.config.Password, z.config.Host, z.config.Port, z.config.Vhost)
 
 	amqpConn, err := amqp091.DialConfig(dsn, amqp091.Config{
-		Heartbeat: time.Second * 2,
+		Heartbeat: time.Second * 10,
 		Locale:    "en_US",
-		Dial:      amqp091.DefaultDial(time.Second * 2),
+		Dial:      amqp091.DefaultDial(time.Second * 5),
 	})
 	if err != nil {
 		return err
@@ -63,6 +63,10 @@ func (z *ZeroLogRabbitMqAdapter) Handle(ctx context.Context) error {
 	defer func(channel *amqp091.Channel) {
 		_ = channel.Close()
 	}(channel)
+
+	if z.config == nil {
+		return errors.New("config expected")
+	}
 
 	exchange := ""
 	if z.config.Exchange != nil {
